@@ -24,7 +24,7 @@
            (L 50d0)
            (h (/ L e)))
       (defparameter
-          *sim*
+        *sim*
         (setup-test-column (list (+ L (* 4 h))
                                  h)
                            (list L
@@ -33,8 +33,9 @@
                            mps))
       (format t "H:~E~%" h)
       (format t "MPs:~D~%" (length (cl-mpm:sim-mps *sim*)))
-      (format t "Running sim size ~a ~a ~%" refine elements)))
-  )
+      (format t "Running sim size ~a ~a ~%" refine elements) 
+      (setf (cl-mpm/dynamic-relaxation::sim-mass-update-count *sim*) 1
+            (cl-mpm/dynamic-relaxation::sim-damping-update-count *sim*) 1)) ))
 
 
 (declaim (notinline test))
@@ -63,8 +64,10 @@
         (output-dir (merge-pathnames (format nil "./data/output-~A-~a_~f_~d_~A/" *solver* *lstps* *refine* *mps* *agg*)))
         (dt 0d0)
         (substeps (if (string= *solver* "DR")
-                      (round (* 25 (expt 1 *refine*)))
-                      1)))
+                      (round (* 25 (expt *refine* 1)))
+                      1))
+        
+        )
     (cl-mpm/setup::set-mass-filter *sim* *rho* :proportion 1d-9)
 
     (uiop:ensure-all-directories-exist (list output-dir))
@@ -112,6 +115,7 @@
     (format stream "solver,threads,refine,lstps,mps,agg,time,error~%"))
 (format t "Testing thread count: ~D ~%" *threads*)
 (format t "Testing refine: ~E ~%" *refine*)
-(test)
+(dotimes (i 3)
+  (test)
+  (sb-ext:gc :full t))
 (cl-mpm/utils::kill-workers)
-(sb-ext:gc :full t)
