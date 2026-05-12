@@ -47,12 +47,6 @@
   (format t "Changing class ~A~%" (gethash *solver* *solver-hash*))
   (change-class *sim* (gethash *solver* *solver-hash*))
 
-  (cl-mpm:iterate-over-mps
-   (cl-mpm:sim-mps *sim*)
-   (lambda (mp)
-     ;; (change-class mp 'cl-mpm/particle::particle-vm)
-     ))
-
   (setf lparallel:*debug-tasks-p* nil)
 
   (setf (cl-mpm/aggregate::sim-enable-aggregate *sim*) *agg*
@@ -82,7 +76,7 @@
           :damping (sqrt 2d0)
           :save-vtk-dr nil
           :save-vtk-loadstep nil
-          :conv-steps 100
+          :conv-steps 500
           :dt-scale 1d0
           :criteria 1d-9))
 
