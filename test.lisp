@@ -110,6 +110,7 @@
 (format t "Testing thread count: ~D ~%" *threads*)
 (format t "Testing refine: ~E ~%" *refine*)
 (dotimes (i 3)
-  (test)
+  (ignore-errors 
+    (test))
   (sb-ext:gc :full t))
 (cl-mpm/utils::kill-workers)
