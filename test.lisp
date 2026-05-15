@@ -12,7 +12,7 @@
 (defparameter *lstps* (let ((var (uiop:getenv "LSTPS"))) (parse-integer (if var var "1"))))
 (defparameter *solver* (let ((var (uiop:getenv "SOLVER"))) (if var var "DR")))
 (defparameter *agg* (let ((var (uiop:getenv "AGG"))) (string= (if var var "TRUE") "TRUE")))
-(defparameter *solver-hash* (serapeum:dict "DR" 'cl-mpm/dynamic-relaxation::mpm-sim-quasi-static "IMPLICIT" 'cl-mpm/implicit::mpm-sim-implicit))
+(defparameter *solver-hash* (serapeum:dict "DR" 'cl-mpm/dynamic-relaxation::mpm-sim-dr-paper "IMPLICIT" 'cl-mpm/implicit::mpm-sim-implicit))
 
 (format t "Running test with settings name ~A refine ~A lstps ~A mps ~A threads ~A solver ~A agg ~A~%" *name* *refine* *lstps* *mps* *threads* *solver* *agg*)
 (cl-mpm/utils::set-workers *threads*)
@@ -65,7 +65,7 @@
     (cl-mpm/setup::set-mass-filter *sim* *rho* :proportion 1d-9)
 
     (uiop:ensure-all-directories-exist (list output-dir))
-
+    (sb-ext:gc :full t)  
     (setf dt
          (cl-mpm/dynamic-relaxation::run-load-control-timed
           *sim*
@@ -110,7 +110,6 @@
 (format t "Testing thread count: ~D ~%" *threads*)
 (format t "Testing refine: ~E ~%" *refine*)
 (dotimes (i 3)
-  (ignore-errors 
-    (test))
-  (sb-ext:gc :full t))
+  (ignore-errors
+    (test)))
 (cl-mpm/utils::kill-workers)
